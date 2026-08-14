@@ -15,7 +15,22 @@ export const TOOLBAR_CSS = /* css */ `
 
 * { box-sizing: border-box; }
 
-:host-context([data-instruckt-theme="dark"]),
+:host {
+  --ik-accent: #6366f1;
+  --ik-accent-h: #4f46e5;
+  --ik-bg: #ffffff;
+  --ik-bg2: #f4f4f5;
+  --ik-border: #e4e4e7;
+  --ik-text: #18181b;
+  --ik-muted: #3f3f46;
+  --ik-shadow: 0 8px 32px rgba(0,0,0,.08), 0 0 0 1px rgba(0,0,0,.04);
+  --ik-panel-bg: var(--ik-bg);
+  --ik-panel-border: transparent;
+  --ik-panel-shadow: var(--ik-shadow);
+  --ik-panel-highlight: transparent;
+  --ik-hover-bg: var(--ik-bg2);
+}
+
 @media (prefers-color-scheme: dark) {
   :host {
     --ik-bg: #1c1c1e; --ik-bg2: #2c2c2e; --ik-border: #38383a;
@@ -24,15 +39,36 @@ export const TOOLBAR_CSS = /* css */ `
   }
 }
 
-:host {
-  --ik-accent: #6366f1;
-  --ik-accent-h: #4f46e5;
-  --ik-bg: #ffffff;
-  --ik-bg2: #f4f4f5;
-  --ik-border: #e4e4e7;
-  --ik-text: #18181b;
-  --ik-muted: #a1a1aa;
-  --ik-shadow: 0 8px 32px rgba(0,0,0,.08), 0 0 0 1px rgba(0,0,0,.04);
+:host-context([data-instruckt-theme="dark"]) {
+  --ik-bg: #1c1c1e; --ik-bg2: #2c2c2e; --ik-border: #38383a;
+  --ik-text: #f4f4f5; --ik-muted: #a1a1aa;
+  --ik-shadow: 0 8px 32px rgba(0,0,0,.4), 0 0 0 1px rgba(255,255,255,.06);
+}
+
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  :host {
+    --ik-panel-bg: rgba(255,255,255,.58);
+    --ik-panel-border: rgba(255,255,255,.72);
+    --ik-panel-highlight: rgba(255,255,255,.74);
+    --ik-hover-bg: rgba(255,255,255,.52);
+    --ik-panel-shadow: 0 14px 38px rgba(24,24,27,.16), 0 2px 8px rgba(24,24,27,.08), inset 0 0 0 1px rgba(255,255,255,.18);
+  }
+  @media (prefers-color-scheme: dark) {
+    :host {
+      --ik-panel-bg: rgba(28,28,30,.62);
+      --ik-panel-border: rgba(255,255,255,.16);
+      --ik-panel-highlight: rgba(255,255,255,.2);
+      --ik-hover-bg: rgba(255,255,255,.1);
+      --ik-panel-shadow: 0 16px 42px rgba(0,0,0,.42), 0 2px 10px rgba(0,0,0,.24), inset 0 0 0 1px rgba(255,255,255,.04);
+    }
+  }
+  :host-context([data-instruckt-theme="dark"]) {
+    --ik-panel-bg: rgba(28,28,30,.62);
+    --ik-panel-border: rgba(255,255,255,.16);
+    --ik-panel-highlight: rgba(255,255,255,.2);
+    --ik-hover-bg: rgba(255,255,255,.1);
+    --ik-panel-shadow: 0 16px 42px rgba(0,0,0,.42), 0 2px 10px rgba(0,0,0,.24), inset 0 0 0 1px rgba(255,255,255,.04);
+  }
 }
 
 .toolbar {
@@ -40,10 +76,17 @@ export const TOOLBAR_CSS = /* css */ `
   flex-direction: column;
   align-items: center;
   gap: 2px;
-  background: var(--ik-bg);
+  position: relative;
+  overflow: visible;
+  background:
+    linear-gradient(145deg, var(--ik-panel-highlight), transparent 42%),
+    var(--ik-panel-bg);
+  border: 1px solid var(--ik-panel-border);
   border-radius: 12px;
   padding: 6px;
-  box-shadow: var(--ik-shadow);
+  box-shadow: var(--ik-panel-shadow);
+  -webkit-backdrop-filter: blur(18px) saturate(165%);
+  backdrop-filter: blur(18px) saturate(165%);
   user-select: none;
   touch-action: none;
   cursor: grab;
@@ -58,7 +101,7 @@ export const TOOLBAR_CSS = /* css */ `
   width: 100%;
   height: 10px;
   cursor: grab;
-  opacity: 0.35;
+  opacity: 0.5;
   transition: opacity 0.15s ease;
   flex-shrink: 0;
   margin-bottom: 2px;
@@ -83,7 +126,7 @@ export const TOOLBAR_CSS = /* css */ `
   transition: background .15s ease, color .15s ease;
 }
 .btn svg { display: block; }
-.btn:hover { background: var(--ik-bg2); color: var(--ik-text); }
+.btn:hover { background: var(--ik-hover-bg); color: var(--ik-text); }
 .btn[data-tooltip]::before {
   content: attr(data-tooltip);
   position: absolute;
@@ -104,6 +147,11 @@ export const TOOLBAR_CSS = /* css */ `
 .btn[data-tooltip]:hover::before { opacity: 1; }
 .btn.active { background: var(--ik-accent); color: #fff; }
 .btn.active:hover { background: var(--ik-accent-h); }
+.btn:disabled { cursor: not-allowed; opacity: .4; }
+.btn.loading { cursor: wait; opacity: .65; }
+.btn.loading svg { animation: ik-spin .8s linear infinite; }
+.btn:focus-visible { outline: 2px solid var(--ik-accent); outline-offset: 2px; }
+@keyframes ik-spin { to { transform: rotate(360deg); } }
 
 .divider { width: 18px; height: 1px; background: var(--ik-border); margin: 3px 0; }
 
@@ -121,10 +169,10 @@ export const TOOLBAR_CSS = /* css */ `
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
-.minimize-btn { color: var(--ik-muted); opacity: .6; }
+.minimize-btn { color: var(--ik-muted); opacity: .72; }
 .minimize-btn:hover { opacity: 1; }
 
-.danger-btn { color: var(--ik-muted); opacity: .6; }
+.danger-btn { color: var(--ik-muted); opacity: .72; }
 .danger-btn:hover { opacity: 1; color: #ef4444; }
 
 .clear-wrap {
@@ -137,8 +185,11 @@ export const TOOLBAR_CSS = /* css */ `
   position: absolute;
   right: 100%;
   top: 0;
-  background: var(--ik-bg);
-  box-shadow: var(--ik-shadow);
+  background: var(--ik-panel-bg);
+  border: 1px solid var(--ik-panel-border);
+  box-shadow: var(--ik-panel-shadow);
+  -webkit-backdrop-filter: blur(18px) saturate(165%);
+  backdrop-filter: blur(18px) saturate(165%);
   border-radius: 8px;
 }
 /* clear-all tooltip inherits from .btn[data-tooltip]::before */
@@ -168,10 +219,14 @@ export const TOOLBAR_CSS = /* css */ `
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  border: none;
-  background: var(--ik-bg);
+  border: 1px solid var(--ik-panel-border);
+  background:
+    linear-gradient(145deg, var(--ik-panel-highlight), transparent 48%),
+    var(--ik-panel-bg);
   color: var(--ik-muted);
-  box-shadow: var(--ik-shadow);
+  box-shadow: var(--ik-panel-shadow);
+  -webkit-backdrop-filter: blur(18px) saturate(165%);
+  backdrop-filter: blur(18px) saturate(165%);
   cursor: pointer;
   padding: 0;
   transition: color .15s ease, transform .15s ease;

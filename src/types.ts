@@ -88,6 +88,58 @@ export interface ToolsConfig {
   minimize?: boolean
 }
 
+export type BuiltinToolbarItemId = keyof ToolsConfig
+
+export interface ToolbarState {
+  annotating: boolean
+  frozen: boolean
+  minimized: boolean
+  annotationCount: number
+  totalCount: number
+}
+
+export interface ToolbarButtonContext {
+  event: MouseEvent
+  id: string
+  button: HTMLButtonElement
+  state: Readonly<ToolbarState>
+  setActive: (active: boolean) => void
+  setDisabled: (disabled: boolean) => void
+  setLoading: (loading: boolean) => void
+  setTooltip: (tooltip: string) => void
+}
+
+export interface BuiltinToolbarItem {
+  type: 'builtin'
+  id: BuiltinToolbarItemId
+}
+
+export interface CustomToolbarButton {
+  type: 'button'
+  id: string
+  /** Trusted SVG/HTML, matching the built-in icon format. */
+  icon: string
+  tooltip: string
+  disabled?: boolean
+  active?: boolean
+  className?: string
+  /** Automatically show a loading state while an async handler is pending. Default: true. */
+  autoLoading?: boolean
+  onClick: (context: ToolbarButtonContext) => void | Promise<void>
+}
+
+export interface ToolbarDivider {
+  type: 'divider'
+  id?: string
+}
+
+export type ToolbarItem = BuiltinToolbarItem | CustomToolbarButton | ToolbarDivider
+
+export interface ToolbarConfig {
+  /** Ordered toolbar items. When provided, this takes precedence over `tools`. */
+  items: ToolbarItem[]
+}
+
 export interface InstrucktConfig {
   /** URL to POST annotations to. Default: '/instruckt' */
   endpoint: string
@@ -103,6 +155,8 @@ export interface InstrucktConfig {
   keys?: KeyBindings
   /** Show or hide built-in toolbar tools. Set to false to hide. Default: all true. */
   tools?: ToolsConfig
+  /** Customize toolbar order and add framework-agnostic buttons. */
+  toolbar?: ToolbarConfig
   /** Path prefix for screenshots in markdown export. Default: 'storage/app/_instruckt/' */
   screenshotPath?: string
   /** Whether MCP tools (get_screenshot, resolve) are available. Default: false */
@@ -110,6 +164,8 @@ export interface InstrucktConfig {
   /** Callbacks */
   onAnnotationAdd?: (annotation: Annotation) => void
   onAnnotationResolve?: (annotation: Annotation) => void
+  /** Called when a custom toolbar action throws or rejects. */
+  onToolbarActionError?: (error: unknown, itemId: string) => void
 }
 
 export interface PendingAnnotation {

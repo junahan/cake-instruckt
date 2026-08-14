@@ -30,6 +30,7 @@
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
+    "test:toolbar": "vite --config examples/toolbar-custom-buttons/vite.config.ts",
     "lint": "oxlint src/",
     "typecheck": "tsc --noEmit",
     "check": "npm run lint && npm run typecheck && npm run build"

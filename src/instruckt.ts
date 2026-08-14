@@ -85,7 +85,7 @@ export class Instruckt {
       onClearPage: () => this.clearPage(),
       onClearAll: () => this.clearEverything(),
       onMinimize: (min) => this.onMinimize(min),
-    }, this.config.keys, this.config.tools)
+    }, this.config.keys, this.config.tools, this.config.toolbar, this.config.onToolbarActionError)
 
     this.highlight = new ElementHighlight()
     this.popup = new AnnotationPopup()
@@ -133,11 +133,13 @@ export class Instruckt {
     this.isAnnotating = false
     this.isFrozen = false
 
+    this.toolbar?.destroy()
+
     // Remove any stale instruckt DOM (Livewire caches and restores old HTML on back nav)
     document.querySelectorAll('[data-instruckt]').forEach(el => el.remove())
 
     // Rebuild everything fresh
-    this.toolbar = new Toolbar(this.config.position, this.makeToolbarCallbacks(), this.config.keys, this.config.tools)
+    this.toolbar = new Toolbar(this.config.position, this.makeToolbarCallbacks(), this.config.keys, this.config.tools, this.config.toolbar, this.config.onToolbarActionError)
     if (wasMinimized) this.toolbar.minimize()
 
     this.markers = new AnnotationMarkers((annotation) => this.onMarkerClick(annotation))

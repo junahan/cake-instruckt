@@ -1,9 +1,9 @@
 import { Instruckt } from './instruckt'
-import type { InstrucktConfig, Annotation, AnnotationIntent, AnnotationSeverity, AnnotationStatus, FrameworkContext, SourceFrame } from './types'
+import type { InstrucktConfig, Annotation, AnnotationIntent, AnnotationSeverity, AnnotationStatus, FrameworkContext, SourceFrame, ToolbarConfig, ToolbarItem, CustomToolbarButton, ToolbarButtonContext, ToolbarState, BuiltinToolbarItemId } from './types'
 import type { AnnotationPayload } from './api'
 
 export { Instruckt }
-export type { InstrucktConfig, Annotation, AnnotationPayload, AnnotationIntent, AnnotationSeverity, AnnotationStatus, FrameworkContext, SourceFrame }
+export type { InstrucktConfig, Annotation, AnnotationPayload, AnnotationIntent, AnnotationSeverity, AnnotationStatus, FrameworkContext, SourceFrame, ToolbarConfig, ToolbarItem, CustomToolbarButton, ToolbarButtonContext, ToolbarState, BuiltinToolbarItemId }
 
 /**
  * Initialize instruckt.

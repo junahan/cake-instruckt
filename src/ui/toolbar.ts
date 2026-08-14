@@ -1,4 +1,4 @@
-import type { KeyBindings, ToolsConfig } from '../types'
+import type { BuiltinToolbarItemId, CustomToolbarButton, KeyBindings, ToolbarConfig, ToolbarState, ToolsConfig } from '../types'
 import { TOOLBAR_CSS } from './styles'
 
 export type ToolbarMode = 'idle' | 'annotating' | 'frozen'
@@ -39,8 +39,22 @@ export class Toolbar {
   private freezeActive = false
   private minimized = false
   private totalCount = 0
+  private annotationCount = 0
   private dragging = false
   private dragOffset = { x: 0, y: 0 }
+  private readonly onDocumentMouseMove = (e: MouseEvent): void => {
+    if (!this.dragging) return
+    Object.assign(this.host.style, {
+      left: `${e.clientX - this.dragOffset.x}px`,
+      bottom: `${window.innerHeight - (e.clientY - this.dragOffset.y) - this.host.offsetHeight}px`,
+      top: 'auto',
+      right: 'auto',
+    })
+  }
+  private readonly onDocumentMouseUp = (): void => {
+    if (this.dragging) this.savePosition()
+    this.dragging = false
+  }
 
   private keys: KeyBindings
 
@@ -51,6 +65,8 @@ export class Toolbar {
     private readonly callbacks: ToolbarCallbacks,
     keys?: KeyBindings,
     tools?: ToolsConfig,
+    private readonly config?: ToolbarConfig,
+    private readonly onActionError?: (error: unknown, itemId: string) => void,
   ) {
     this.keys = keys ?? {}
     this.tools = tools ?? {}
@@ -139,12 +155,34 @@ export class Toolbar {
       if (toAppend.length > 0) toAppend.push(mkDiv())
       toAppend.push(el)
     }
-    if (this.show('annotate')) add(this.annotateBtn)
-    if (this.show('screenshot')) add(screenshotBtn)
-    if (this.show('freeze')) add(this.freezeBtn)
-    if (this.show('copy')) add(this.copyBtn)
-    if (this.show('clear_page') || this.show('clear_all')) add(clearWrap)
-    if (this.show('minimize')) add(minimizeBtn)
+    if (this.config) {
+      clearAllBtn.classList.remove('clear-all-btn')
+      const builtins: Record<BuiltinToolbarItemId, HTMLButtonElement> = {
+        annotate: this.annotateBtn,
+        screenshot: screenshotBtn,
+        freeze: this.freezeBtn,
+        copy: this.copyBtn,
+        clear_page: clearBtn,
+        clear_all: clearAllBtn,
+        minimize: minimizeBtn,
+      }
+      for (const item of this.config.items) {
+        if (item.type === 'divider') {
+          toAppend.push(mkDiv())
+        } else if (item.type === 'builtin') {
+          toAppend.push(builtins[item.id])
+        } else {
+          toAppend.push(this.makeCustomBtn(item))
+        }
+      }
+    } else {
+      if (this.show('annotate')) add(this.annotateBtn)
+      if (this.show('screenshot')) add(screenshotBtn)
+      if (this.show('freeze')) add(this.freezeBtn)
+      if (this.show('copy')) add(this.copyBtn)
+      if (this.show('clear_page') || this.show('clear_all')) add(clearWrap)
+      if (this.show('minimize')) add(minimizeBtn)
+    }
     this.toolbarEl.append(...toAppend)
     this.shadow.appendChild(this.toolbarEl)
 
@@ -183,6 +221,61 @@ export class Toolbar {
     btn.addEventListener('click', (e) => {
       e.stopPropagation()
       onClick()
+    })
+    return btn
+  }
+
+  private makeCustomBtn(item: CustomToolbarButton): HTMLButtonElement {
+    const btn = document.createElement('button')
+    btn.className = 'btn'
+    if (item.className) btn.classList.add(...item.className.split(/\s+/).filter(Boolean))
+    btn.innerHTML = item.icon
+    btn.disabled = item.disabled ?? false
+    btn.classList.toggle('active', item.active ?? false)
+
+    const setTooltip = (tooltip: string) => {
+      btn.setAttribute('data-tooltip', tooltip)
+      btn.setAttribute('aria-label', tooltip)
+      btn.title = tooltip
+    }
+    const setLoading = (loading: boolean) => {
+      btn.classList.toggle('loading', loading)
+      btn.setAttribute('aria-busy', String(loading))
+    }
+    setTooltip(item.tooltip)
+
+    btn.addEventListener('click', async (event) => {
+      event.stopPropagation()
+      if (btn.disabled || btn.classList.contains('loading')) return
+      const state: ToolbarState = {
+        annotating: this.annotateActive,
+        frozen: this.freezeActive,
+        minimized: this.minimized,
+        annotationCount: this.annotationCount,
+        totalCount: this.totalCount,
+      }
+      const autoLoading = item.autoLoading !== false
+      try {
+        const result = item.onClick({
+          event,
+          id: item.id,
+          button: btn,
+          state: Object.freeze(state),
+          setActive: active => btn.classList.toggle('active', active),
+          setDisabled: disabled => { btn.disabled = disabled },
+          setLoading,
+          setTooltip,
+        })
+        if (result && typeof result.then === 'function') {
+          if (autoLoading) setLoading(true)
+          await result
+        }
+      } catch (error) {
+        if (this.onActionError) this.onActionError(error, item.id)
+        else console.error(`[instruckt] Toolbar action "${item.id}" failed`, error)
+      } finally {
+        if (autoLoading) setLoading(false)
+      }
     })
     return btn
   }
@@ -227,20 +320,8 @@ export class Toolbar {
       e.preventDefault()
     })
 
-    document.addEventListener('mousemove', (e) => {
-      if (!this.dragging) return
-      Object.assign(this.host.style, {
-        left: `${e.clientX - this.dragOffset.x}px`,
-        bottom: `${window.innerHeight - (e.clientY - this.dragOffset.y) - this.host.offsetHeight}px`,
-        top: 'auto',
-        right: 'auto',
-      })
-    })
-
-    document.addEventListener('mouseup', () => {
-      if (this.dragging) this.savePosition()
-      this.dragging = false
-    })
+    document.addEventListener('mousemove', this.onDocumentMouseMove)
+    document.addEventListener('mouseup', this.onDocumentMouseUp)
   }
 
   private setMinimized(min: boolean): void {
@@ -294,6 +375,7 @@ export class Toolbar {
   }
 
   setAnnotationCount(count: number): void {
+    this.annotationCount = count
     let badge = this.annotateBtn.querySelector('.badge')
     if (count > 0) {
       if (!badge) {
@@ -313,6 +395,8 @@ export class Toolbar {
   }
 
   destroy(): void {
+    document.removeEventListener('mousemove', this.onDocumentMouseMove)
+    document.removeEventListener('mouseup', this.onDocumentMouseUp)
     this.host.remove()
     document.body.classList.remove('ik-annotating')
   }

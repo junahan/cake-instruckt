@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Instruckt Toolbar Test Bench</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <main class="shell">
+      <header>
+        <p class="eyebrow"><span></span> INSTRUCKT / LOCAL TEST BENCH</p>
+        <h1>Toolbar<br /><em>injection lab.</em></h1>
+        <p class="lede">A standalone Vite fixture for testing ordered built-ins, custom actions, async states, tooltips, and error recovery.</p>
+      </header>
+
+      <section class="test-grid" aria-label="Test checklist">
+        <article><b>01</b><h2>Signal</h2><p>Click the waveform icon. It should become active and update its tooltip.</p></article>
+        <article><b>02</b><h2>Async</h2><p>Click the spinner icon. It should animate and reject repeat clicks for 1.4 seconds.</p></article>
+        <article><b>03</b><h2>Failure</h2><p>Click the warning icon. The configured error handler should capture the failure.</p></article>
+        <article><b>04</b><h2>Native tools</h2><p>Annotate, screenshot, copy, minimize, and toolbar dragging should remain functional.</p></article>
+      </section>
+
+      <section class="monitor">
+        <div class="monitor-head">
+          <div><span class="pulse"></span> EVENT MONITOR</div>
+          <button id="clear-log" type="button">CLEAR</button>
+        </div>
+        <ol id="event-log" aria-live="polite">
+          <li class="empty">Waiting for a custom toolbar action…</li>
+        </ol>
+      </section>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

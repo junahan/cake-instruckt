@@ -312,14 +312,46 @@ new Instruckt({
     clearPage: 'x',   // clear annotations on this page
   },
 
+  // Optional ordered toolbar items. When set, this takes precedence over `tools`.
+  // Custom buttons use the same Shadow DOM styles as built-in buttons.
+  toolbar: {
+    items: [
+      { type: 'builtin', id: 'annotate' },
+      {
+        type: 'button',
+        id: 'open-settings',
+        icon: '<svg width="18" height="18" viewBox="0 0 24 24">...</svg>',
+        tooltip: 'Open settings',
+        async onClick({ setActive, setTooltip }) {
+          await openSettings()
+          setActive(true)
+          setTooltip('Settings opened')
+        },
+      },
+      { type: 'builtin', id: 'screenshot' },
+      { type: 'divider' },
+      { type: 'builtin', id: 'copy' },
+      { type: 'builtin', id: 'minimize' },
+    ],
+  },
+
   // Whether MCP tools are available (default: false)
   // Set to true when using with Laravel or another backend that registers MCP tools
   mcp: false,
 
   // Callbacks
   onAnnotationAdd: (annotation) => {},
+
+  onToolbarActionError: (error, itemId) => {
+    console.error(`Toolbar action ${itemId} failed`, error)
+  },
 })
 ```
+
+Toolbar callbacks and custom icons must be configured in browser runtime code via
+`init()` or `new Instruckt()`. They cannot be declared in `vite.config.js`, because
+the Vite plugin serializes its client options as JSON. Icon HTML must come from
+trusted application code.
 
 ## Keyboard Shortcuts
 
