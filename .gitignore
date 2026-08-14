@@ -1,3 +1,13 @@
 node_modules/
 dist/
+coverage/
+.vite/
+*.log
 .playwright-mcp/
+
+# mac
+.DS_Store
+
+# ide
+.idea/
+.vscode/
