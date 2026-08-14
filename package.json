@@ -34,7 +34,8 @@
     "test:toolbar": "vite --config examples/toolbar-custom-buttons/vite.config.ts",
     "lint": "oxlint src/",
     "typecheck": "tsc --noEmit",
-    "check": "npm run lint && npm run typecheck && npm run build"
+    "check": "npm run lint && npm run typecheck && npm run build",
+    "prepublishOnly": "npm run check"
   },
   "devDependencies": {
     "@types/node": "^25.5.0",
