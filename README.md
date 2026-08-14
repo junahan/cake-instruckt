@@ -4,7 +4,21 @@ Visual feedback tool for AI coding agents. Click on any element in your app, lea
 
 Framework-agnostic JS core with adapters for Livewire, Vue, Svelte, and React.
 
-`cake-instruckt` is an independent open-source project inspired by [instruckt](https://github.com/joshcirre/instruckt). Thanks to the original project and its contributors for the ideas and foundation that made this project possible.
+## Why cake-instruckt?
+
+[instruckt](https://github.com/joshcirre/instruckt) is the original visual feedback tool that turns element-level comments, framework context, and screenshots into structured markdown for AI coding agents.
+
+`cake-instruckt` is an independent open-source project inspired by instruckt. It keeps the original annotation workflow and compatible core API, while focusing on an extensible toolbar that applications can adapt to their own development workflows.
+
+| | instruckt | cake-instruckt |
+|---|---|---|
+| Package | `instruckt` | `cake-instruckt` |
+| Core workflow | Visual annotations and screenshots for AI agents | The same familiar annotation workflow |
+| Toolbar | Built-in tools with visibility configuration | Ordered built-in tools, dividers, and application-defined buttons |
+| Custom actions | Fixed to the provided toolbar actions | Async runtime callbacks with active-state and tooltip updates |
+| Error handling | Built-in action handling | Optional `onToolbarActionError` callback for custom actions |
+
+This project is maintained and released separately from instruckt. Thanks to the original project and its contributors for the ideas and foundation that made this project possible.
 
 See the [changelog](CHANGELOG.md) for changes in each released version.
 
