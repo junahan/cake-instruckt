@@ -150,7 +150,7 @@ export default function instruckt(options: InstrucktPluginOptions = {}): Plugin 
         const cfg = JSON.stringify(clientConfig())
         return [
           `if (!import.meta.env.SSR && import.meta.env.DEV) {`,
-          `  const { init } = await import('instruckt');`,
+          `  const { init } = await import('cake-instruckt');`,
           `  init(${cfg});`,
           `}`,
         ].join('\n')
@@ -161,7 +161,7 @@ export default function instruckt(options: InstrucktPluginOptions = {}): Plugin 
     transformIndexHtml(html: string) {
       const cfg = JSON.stringify(clientConfig())
       const script = `<script type="module">
-import { init } from 'instruckt';
+import { init } from 'cake-instruckt';
 if (import.meta.env.DEV) init(${cfg});
 </script>`
       return html.replace('</body>', `${script}\n</body>`)

@@ -1,13 +1,13 @@
 {
-  "name": "instruckt",
-  "version": "0.4.31",
+  "name": "cake-instruckt",
+  "version": "0.1.0",
   "description": "Visual feedback tool for AI coding agents — framework-agnostic, Livewire-first",
   "type": "module",
   "license": "MIT",
-  "author": "instruckt",
+  "author": "junahan",
   "repository": {
     "type": "git",
-    "url": "https://github.com/joshcirre/instruckt"
+    "url": "git+https://github.com/junahan/cake-instruckt.git"
   },
   "main": "dist/instruckt.cjs.js",
   "module": "dist/instruckt.esm.js",
@@ -25,7 +25,8 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "CHANGELOG.md"
   ],
   "scripts": {
     "build": "tsup",

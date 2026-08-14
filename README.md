@@ -1,13 +1,17 @@
-# instruckt
+# cake-instruckt
 
 Visual feedback tool for AI coding agents. Click on any element in your app, leave a note, capture screenshots, and copy structured markdown to paste into your AI agent.
 
 Framework-agnostic JS core with adapters for Livewire, Vue, Svelte, and React.
 
+`cake-instruckt` is an independent open-source project inspired by [instruckt](https://github.com/joshcirre/instruckt). Thanks to the original project and its contributors for the ideas and foundation that made this project possible.
+
+See the [changelog](CHANGELOG.md) for changes in each released version.
+
 ## Install
 
 ```bash
-npm install instruckt
+npm install cake-instruckt
 ```
 
 ## Quick Start
@@ -32,7 +36,7 @@ Add the Vite plugin — it handles client injection and provides a built-in dev 
 
 ```js
 // vite.config.ts
-import instruckt from 'instruckt/vite'
+import instruckt from 'cake-instruckt/vite'
 
 export default defineConfig({
   plugins: [instruckt()],
@@ -49,7 +53,7 @@ Two steps — add the Vite plugin, then import the virtual module in your layout
 
 ```js
 // vite.config.ts
-import instruckt from 'instruckt/vite'
+import instruckt from 'cake-instruckt/vite'
 
 export default defineConfig({
   plugins: [sveltekit(), instruckt()],
@@ -73,7 +77,7 @@ Same idea — add the Vite plugin, then import the virtual module in a client pl
 
 ```js
 // nuxt.config.ts — add the Vite plugin
-import instruckt from 'instruckt/vite'
+import instruckt from 'cake-instruckt/vite'
 
 export default defineNuxtConfig({
   vite: {
@@ -103,7 +107,7 @@ export function InstrucktProvider() {
   useEffect(() => {
     let instruckt: any
 
-    import('instruckt').then(({ Instruckt }) => {
+    import('cake-instruckt').then(({ Instruckt }) => {
       instruckt = new Instruckt({
         endpoint: '/api/annotations',
         adapters: ['react'],
@@ -148,7 +152,7 @@ The install command adds the Vite plugin to your `vite.config.js` with `server: 
 
 ```js
 // vite.config.js (added automatically by install command)
-import instruckt from 'instruckt/vite'
+import instruckt from 'cake-instruckt/vite'
 
 export default defineConfig({
   plugins: [
@@ -196,7 +200,7 @@ Then add the Vite plugin to your frontend with `server: false` (Tauri owns the b
 
 ```js
 // vite.config.ts
-import instruckt from 'instruckt/vite'
+import instruckt from 'cake-instruckt/vite'
 
 export default defineConfig({
   plugins: [
